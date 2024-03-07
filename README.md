@@ -26,7 +26,7 @@ void iteratedSHABAL256() throws Exception {
   Hasher<byte[]> hasher = HashingAlgorithms.shabal256().getHasher(Function.identity());
   // repeat hashing many times
   for (int i = 0; i < 10_000_000; i++)
-   	data = hasher.hash(data);
+    data = hasher.hash(data);
 
   long elapsed = System.currentTimeMillis() - start;
   System.out.println("shabal256 took " + elapsed + "ms");
