@@ -82,8 +82,8 @@ Note: submodules whose artifact must be deployed on Maven Central must activate 
 
   <!-- specific profiles might add more modules to these -->
   <modules>
-  <module>io-hotmoka-crypto-api</module>
-  <module>io-hotmoka-crypto</module>
+    <module>io-hotmoka-crypto-api</module>
+    <module>io-hotmoka-crypto</module>
   </modules>
 
   <!-- typical dependencies if submodules use JUnit 5 -->
