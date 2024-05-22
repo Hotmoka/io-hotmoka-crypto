@@ -26,6 +26,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
@@ -37,6 +38,7 @@ import org.bouncycastle.crypto.CryptoServicesRegistrar;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import io.hotmoka.crypto.api.BIP39Dictionary;
 
@@ -62,10 +64,10 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 	private final KeyFactory keyFactory;
 
 	public SHA256DSA() throws NoSuchAlgorithmException {
-		this.signature = Signature.getInstance("SHA256withDSA");
-		this.keyPairGenerator = mkKeyPairGenerator(CryptoServicesRegistrar.getSecureRandom());
-
 		try {
+			ensureProvider();
+			this.signature = Signature.getInstance("SHA256withDSA", "BC");
+			this.keyPairGenerator = mkKeyPairGenerator(CryptoServicesRegistrar.getSecureRandom());
 			this.keyFactory = KeyFactory.getInstance("DSA", "SUN");
 		}
     	catch (NoSuchProviderException e) {
@@ -74,8 +76,8 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 	}
 
 	@Override
-	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException {
-		var keyPairGenerator = KeyPairGenerator.getInstance("DSA");
+	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException {
+		var keyPairGenerator = KeyPairGenerator.getInstance("DSA", "BC");
 		keyPairGenerator.initialize(2048, random);
 		return keyPairGenerator;
 	}
@@ -109,7 +111,7 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 		try {
 			return mkKeyPairGenerator(random).generateKeyPair();
 		}
-		catch (NoSuchAlgorithmException e) {
+		catch (NoSuchProviderException | NoSuchAlgorithmException e) {
 			throw new RuntimeException("Unexpected exception", e);
 		}
 	}
@@ -146,5 +148,10 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 	@Override
 	public PrivateKey privateKeyFromEncoding(byte[] encoded) throws InvalidKeySpecException {
 		return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encoded));
+	}
+
+	private static void ensureProvider() {
+		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
+	        Security.addProvider(new BouncyCastleProvider());
 	}
 }

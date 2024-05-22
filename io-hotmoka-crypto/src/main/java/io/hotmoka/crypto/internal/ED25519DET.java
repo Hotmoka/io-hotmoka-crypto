@@ -78,7 +78,8 @@ public class ED25519DET extends AbstractSignatureAlgorithmImpl {
     public ED25519DET() throws NoSuchAlgorithmException {
     	try {
     		ensureProvider();
-    		this.signature = Signature.getInstance("Ed25519");
+    		// the BC version of this algorithm is faster than the native Java version
+    		this.signature = Signature.getInstance("Ed25519", "BC");
     		this.keyFactory = KeyFactory.getInstance("Ed25519", "BC");
     		var random = SecureRandom.getInstance("SHA1PRNG");
             random.setSeed("nel mezzo del cammin di nostra vita".getBytes(StandardCharsets.US_ASCII));

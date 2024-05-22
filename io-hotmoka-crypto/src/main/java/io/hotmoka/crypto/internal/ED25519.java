@@ -74,7 +74,8 @@ public class ED25519 extends AbstractSignatureAlgorithmImpl {
     public ED25519() throws NoSuchAlgorithmException {
     	try {
     		ensureProvider();
-    		this.signature = Signature.getInstance("Ed25519");
+    		// the BC version of this algorithm is faster than the native Java version
+    		this.signature = Signature.getInstance("Ed25519", "BC");
     		this.keyFactory = KeyFactory.getInstance("Ed25519", "BC");
     		this.keyPairGenerator = mkKeyPairGenerator(CryptoServicesRegistrar.getSecureRandom());
     	}
