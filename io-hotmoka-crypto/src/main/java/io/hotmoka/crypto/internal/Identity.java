@@ -75,6 +75,6 @@ public class Identity extends AbstractHashingAlgorithm {
 
 	@Override
 	public String getName() {
-		return super.getName() + size;
+		return "identity" + size;
 	}
 }

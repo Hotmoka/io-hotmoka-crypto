@@ -130,6 +130,11 @@ public class QTESLA3 extends AbstractSignatureAlgorithmImpl {
 		return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encoded));
 	}
 
+    @Override
+	public String getName() {
+		return "qtesla3"; // optimization
+	}
+
     private static void ensureProvider() {
     	 if (Security.getProvider(BouncyCastlePQCProvider.PROVIDER_NAME) == null)
              Security.addProvider(new BouncyCastlePQCProvider());

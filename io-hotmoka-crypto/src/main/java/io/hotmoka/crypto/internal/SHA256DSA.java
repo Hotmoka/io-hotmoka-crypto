@@ -150,7 +150,12 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 		return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encoded));
 	}
 
-	private static void ensureProvider() {
+    @Override
+	public String getName() {
+		return "sha256dsa"; // optimization
+	}
+
+    private static void ensureProvider() {
 		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
 	        Security.addProvider(new BouncyCastleProvider());
 	}

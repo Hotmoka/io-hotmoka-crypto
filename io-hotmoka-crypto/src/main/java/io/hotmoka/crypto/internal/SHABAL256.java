@@ -43,6 +43,11 @@ public class SHABAL256 extends AbstractHashingAlgorithm {
 		return new SHABAL256();
 	}
 
+    @Override
+	public String getName() {
+		return "shabal256"; // optimization
+	}
+
 	/**
 	 * This class is a hard-coded 256 bits version of the Shabal hashing digest.
 	 *

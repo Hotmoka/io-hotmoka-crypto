@@ -64,4 +64,9 @@ public class SHA256 extends AbstractHashingAlgorithm {
 			throw new RuntimeException("Cannot clone SHA256 since the provider is not available");
 		}
 	}
+
+    @Override
+	public String getName() {
+		return "sha256"; // optimization
+	}
 }

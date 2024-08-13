@@ -161,6 +161,11 @@ public class ED25519DET extends AbstractSignatureAlgorithmImpl {
     	}
     }
 
+    @Override
+	public String getName() {
+		return "ed25519det"; // optimization
+	}
+
     private static void ensureProvider() {
 		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
 	        Security.addProvider(new BouncyCastleProvider());
