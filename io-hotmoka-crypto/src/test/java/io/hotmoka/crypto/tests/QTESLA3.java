@@ -16,6 +16,7 @@ limitations under the License.
 
 package io.hotmoka.crypto.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,6 +39,7 @@ public class QTESLA3 extends AbstractLoggedTests {
 
         KeyPair keyPair = qTesla3.getKeyPair();
         byte[] signed = qTesla3.getSigner(keyPair.getPrivate(), (String s) -> s.getBytes()).sign(data);
+        assertEquals(qTesla3.length().getAsInt(), signed.length);
         var verifier = qTesla3.getVerifier(keyPair.getPublic(), (String s) -> s.getBytes());
         assertTrue(verifier.verify(data, signed), "data is not verified correctly");
         assertFalse(verifier.verify(data + "corrupted", signed), "corrupted data is verified");
@@ -45,7 +47,7 @@ public class QTESLA3 extends AbstractLoggedTests {
 
     @Test
     @DisplayName("sign, verify and create the public key from the encoded public key")
-    void testEncodedPublicKey() throws Exception {
+    void testED25519KeyEncoding() throws Exception {
         var qTesla3 = SignatureAlgorithms.qtesla3();
 
         KeyPair keyPair = qTesla3.getKeyPair();

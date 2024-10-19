@@ -52,7 +52,7 @@ public class SHA256DSA extends AbstractLoggedTests {
 
     @Test
     @DisplayName("sign, verify and create the public key from the encoded public key")
-    void testEncodedPublicKey() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, InvalidKeySpecException {
+    void testED25519KeyEncoding() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, InvalidKeySpecException {
     	// create a signature algorithm
     	var sha256dsa = SignatureAlgorithms.sha256dsa();
     	// create a key pair (public, private) with that signature algorithm

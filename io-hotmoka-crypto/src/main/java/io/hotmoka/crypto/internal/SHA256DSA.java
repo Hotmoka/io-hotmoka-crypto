@@ -32,6 +32,7 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 import org.bouncycastle.crypto.CryptoServicesRegistrar;
@@ -155,7 +156,22 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 		return "sha256dsa"; // optimization
 	}
 
-    private static void ensureProvider() {
+    @Override
+	public OptionalInt publicKeyLength() {
+		return OptionalInt.empty();
+	}
+
+	@Override
+	public OptionalInt privateKeyLength() {
+		return OptionalInt.empty();
+	}
+
+	@Override
+	public OptionalInt length() {
+		return OptionalInt.empty();
+	}
+
+	private static void ensureProvider() {
 		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null)
 	        Security.addProvider(new BouncyCastleProvider());
 	}

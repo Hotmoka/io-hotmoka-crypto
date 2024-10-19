@@ -31,6 +31,7 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.OptionalInt;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -135,7 +136,22 @@ public class QTESLA3 extends AbstractSignatureAlgorithmImpl {
 		return "qtesla3"; // optimization
 	}
 
-    private static void ensureProvider() {
+    @Override
+	public OptionalInt publicKeyLength() {
+		return OptionalInt.of(38456);
+	}
+
+	@Override
+	public OptionalInt privateKeyLength() {
+		return OptionalInt.of(12422);
+	}
+
+	@Override
+	public OptionalInt length() {
+		return OptionalInt.of(5664);
+	}
+
+	private static void ensureProvider() {
     	 if (Security.getProvider(BouncyCastlePQCProvider.PROVIDER_NAME) == null)
              Security.addProvider(new BouncyCastlePQCProvider());
 	}

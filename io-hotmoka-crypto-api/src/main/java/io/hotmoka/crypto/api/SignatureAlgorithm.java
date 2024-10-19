@@ -21,6 +21,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.OptionalInt;
 import java.util.function.Function;
 
 /**
@@ -119,6 +120,27 @@ public interface SignatureAlgorithm {
      * @return the key pair derived from entropy and password
      */
     KeyPair getKeyPair(byte[] entropy, String password);
+
+    /**
+     * Yields the length of the public keys of this signature algorithm.
+     * 
+     * @return the length, in bytes, if available
+     */
+    OptionalInt publicKeyLength();
+
+    /**
+     * Yields the length of the private keys of this signature algorithm.
+     * 
+     * @return the length, in bytes, if available
+     */
+    OptionalInt privateKeyLength();
+
+    /**
+     * Yields the length of the signatures performed with this signature algorithm.
+     * 
+     * @return the length, in bytes, if available
+     */
+    OptionalInt length();
 
     /**
      * Determines if this signature algorithm is the same as another.

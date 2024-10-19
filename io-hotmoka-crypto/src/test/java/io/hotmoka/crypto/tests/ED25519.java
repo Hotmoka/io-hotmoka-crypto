@@ -16,6 +16,7 @@ limitations under the License.
 
 package io.hotmoka.crypto.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,18 +42,20 @@ public class ED25519 extends AbstractLoggedTests {
     @DisplayName("sign data with the ed25519 signature")
     void sign() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     	var ed25519 = SignatureAlgorithms.ed25519();
+    	String data = this.data;
         KeyPair keyPair = ed25519.getKeyPair();
         Signer<String> signer = ed25519.getSigner(keyPair.getPrivate(), String::getBytes);
         Verifier<String> verifier = ed25519.getVerifier(keyPair.getPublic(), String::getBytes);
         byte[] signed = signer.sign(data);
 
+        assertEquals(ed25519.length().getAsInt(), signed.length);
         assertTrue(verifier.verify(data, signed), "data is not verified correctly");
         assertFalse(verifier.verify(data + "corrupted", signed), "corrupted data is verified");
     }
 
     @Test
     @DisplayName("sign, verify and create the public key from the encoded public key")
-    void testEncodedPublicKey() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, InvalidKeySpecException {
+    void testED25519KeyEncoding() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, InvalidKeySpecException {
     	// create a signature algorithm
     	var ed25519 = SignatureAlgorithms.ed25519();
     	// create a key pair (public, private) with that signature algorithm

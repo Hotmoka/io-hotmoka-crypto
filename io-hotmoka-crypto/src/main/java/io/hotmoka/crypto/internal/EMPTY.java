@@ -22,6 +22,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.OptionalInt;
 
 /**
  * A dummy signature algorithm that signs everything with an empty array of bytes.
@@ -109,5 +110,20 @@ public class EMPTY extends AbstractSignatureAlgorithmImpl {
     @Override
 	public String getName() {
 		return "empty"; // optimization
+	}
+
+    @Override
+	public OptionalInt publicKeyLength() {
+		return OptionalInt.of(EMPTY.length);
+	}
+
+	@Override
+	public OptionalInt privateKeyLength() {
+		return OptionalInt.of(EMPTY.length);
+	}
+
+	@Override
+	public OptionalInt length() {
+		return OptionalInt.of(EMPTY.length);
 	}
 }
