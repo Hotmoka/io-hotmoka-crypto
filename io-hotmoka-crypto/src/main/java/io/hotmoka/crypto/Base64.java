@@ -16,6 +16,8 @@ limitations under the License.
 
 package io.hotmoka.crypto;
 
+import java.util.function.Function;
+
 import org.bouncycastle.util.encoders.DecoderException;
 import org.bouncycastle.util.encoders.EncoderException;
 
@@ -62,11 +64,38 @@ public final class Base64 {
 	 * @throws Base64ConversionException if the conversion fails
 	 */
 	public static byte[] fromBase64String(String base64) throws Base64ConversionException {
+		return fromBase64String(base64, Base64ConversionException::new);
+	}
+
+	/**
+	 * Yields a byte representation of the given Base64 string.
+	 * 
+	 * @param <E> the type of the exception thrown if the conversion fails
+	 * @param base64 the Base64 string
+	 * @param onConversionFailed the generator of the exception thrown if the conversion fails
+	 * @return the byte representation (most significant byte first) of {@code base64}
+	 * @throws E if the conversion fails
+	 */
+	public static <E extends Exception> byte[] fromBase64String(String base64, Function<String, ? extends E> onConversionFailed) throws E {
 		try {
 			return org.bouncycastle.util.encoders.Base64.decode(base64);
 		}
 		catch (DecoderException e) {
-			throw new Base64ConversionException(e);
+			throw onConversionFailed.apply(e.getMessage());
 		}
+	}
+
+	/**
+	 * Checks that the given string is actually in Base64 format.
+	 * 
+	 * @param <E> the type of the exception thrown if {@code s} is not in Base64 format
+	 * @param s the string to check
+	 * @param onIllegalFormat the generator of the exception thrown if {@code s} is not in Base64 format
+	 * @return the string {@code s} itself
+	 * @throws E if {@code s} is not in Base64 format
+	 */
+	public static <E extends Exception> String requireBase64(String s, Function<String, ? extends E> onIllegalFormat) throws E {
+		fromBase64String(s, onIllegalFormat);
+		return s;
 	}
 }

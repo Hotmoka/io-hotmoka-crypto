@@ -16,6 +16,8 @@ limitations under the License.
 
 package io.hotmoka.crypto;
 
+import java.util.function.Function;
+
 import org.bouncycastle.util.encoders.DecoderException;
 import org.bouncycastle.util.encoders.EncoderException;
 
@@ -62,11 +64,38 @@ public final class Hex {
 	 * @throws HexConversionException if the conversion fails
 	 */
 	public static byte[] fromHexString(String hex) throws HexConversionException {
+		return fromHexString(hex, HexConversionException::new);
+	}
+
+	/**
+	 * Yields a byte representation of the given hexadecimal string.
+	 * 
+	 * @param <E> the type of the exception thrown if the conversion fails
+	 * @param hex the hexadecimal string
+	 * @param onConversionFailed the generator of the exception thrown if the conversion fails
+	 * @return the byte representation (most significant byte first) of {@code hex}
+	 * @throws E if the conversion fails
+	 */
+	public static <E extends Exception> byte[] fromHexString(String hex, Function<String, ? extends E> onConversionFailed) throws E {
 		try {
 			return org.bouncycastle.util.encoders.Hex.decode(hex);
 		}
 		catch (DecoderException e) {
-			throw new HexConversionException(e);
+			throw onConversionFailed.apply(e.getMessage());
 		}
+	}
+
+	/**
+	 * Checks that the given string is actually in hexadecimal format.
+	 * 
+	 * @param <E> the type of the exception thrown if {@code s} is not in hexadecimal format
+	 * @param s the string to check
+	 * @param onIllegalFormat the generator of the exception thrown if {@code s} is not in hexadecimal format
+	 * @return the string {@code s} itself
+	 * @throws E if {@code s} is not in hexadecimal format
+	 */
+	public static <E extends Exception> String requireHex(String s, Function<String, ? extends E> onIllegalFormat) throws E {
+		fromHexString(s, onIllegalFormat);
+		return s;
 	}
 }
