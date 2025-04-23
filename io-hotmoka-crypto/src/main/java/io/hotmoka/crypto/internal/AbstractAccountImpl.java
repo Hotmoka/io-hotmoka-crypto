@@ -81,6 +81,20 @@ public abstract class AbstractAccountImpl<R extends Comparable<? super R>> exten
 		this.reference = reference;
 	}
 
+	/**
+	 * Creates the information to control an account.
+	 * The entropy of the account is recovered from its PEM file.
+	 * 
+	 * @param reference the reference to the account
+	 * @param dir the directory where the PEM file must be looked for
+	 * @throws IOException if the PEM file cannot be read
+	 */
+	protected AbstractAccountImpl(R reference, Path dir) throws IOException {
+		super(dir.resolve(reference.toString() + ".pem"));
+
+		this.reference = reference;
+	}
+
 	@Override
 	public R getReference() {
 		return reference;
