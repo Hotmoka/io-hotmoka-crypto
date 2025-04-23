@@ -135,7 +135,7 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
         	digest = MessageDigest.getInstance("SHA-256");
         }
         catch (NoSuchAlgorithmException e) {
-        	throw new RuntimeException("unexpected exception", e);
+        	throw new RuntimeException("Unexpected exception", e);
         }
 
         var merge = new byte[entropy.length + transaction.length];
@@ -147,7 +147,7 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
             checksumRecomputed[pos] = (sha256[pos] & (0x80 >>> (pos % 8))) != 0;
 
         if (!Arrays.equals(checksum, checksumRecomputed))
-            throw new IllegalArgumentException("illegal mnemonic phrase: checksum mismatch");
+            throw new IllegalArgumentException("Illegal mnemonic phrase: checksum mismatch");
 
         return accountCreator.apply(io.hotmoka.crypto.Entropies.of(entropy), transaction);
     }
@@ -174,7 +174,7 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
         	digest = MessageDigest.getInstance("SHA-256");
         }
         catch (NoSuchAlgorithmException e) {
-        	throw new RuntimeException("unexpected exception", e);
+        	throw new RuntimeException("Unexpected exception", e);
         }
 
         var sha256 = digest.digest(data);
