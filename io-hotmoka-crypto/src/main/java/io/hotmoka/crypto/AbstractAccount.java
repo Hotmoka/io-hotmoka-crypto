@@ -17,6 +17,7 @@ limitations under the License.
 package io.hotmoka.crypto;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import io.hotmoka.crypto.api.Entropy;
 import io.hotmoka.crypto.internal.AbstractAccountImpl;
@@ -61,6 +62,18 @@ public abstract class AbstractAccount<R extends Comparable<? super R>> extends A
 	 * @throws IOException if the PEM file cannot be read
 	 */
 	protected AbstractAccount(R reference, String dir) throws IOException {
+		super(reference, dir);
+	}
+
+	/**
+	 * Creates the information to control an account.
+	 * The entropy of the account is recovered from its PEM file.
+	 * 
+	 * @param reference the reference to the account
+	 * @param dir the directory where the PEM file must be looked for
+	 * @throws IOException if the PEM file cannot be read
+	 */
+	protected AbstractAccount(R reference, Path dir) throws IOException {
 		super(reference, dir);
 	}
 }
