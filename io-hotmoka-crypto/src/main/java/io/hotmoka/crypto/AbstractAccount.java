@@ -18,6 +18,7 @@ package io.hotmoka.crypto;
 
 import java.io.IOException;
 
+import io.hotmoka.crypto.api.Entropy;
 import io.hotmoka.crypto.internal.AbstractAccountImpl;
 
 /**
@@ -36,7 +37,7 @@ public abstract class AbstractAccount<R extends Comparable<? super R>> extends A
 	 * @param entropy the entropy, from which the key pair can be derived
 	 * @param reference the reference to the account
 	 */
-	protected AbstractAccount(io.hotmoka.crypto.api.Entropy entropy, R reference) {
+	protected AbstractAccount(Entropy entropy, R reference) {
 		super(entropy, reference);
 	}
 
