@@ -98,7 +98,7 @@ public class EntropyImpl implements Entropy	 {
 	 * 
 	 * @param parent the entropy to clone
 	 */
-	public EntropyImpl(Entropy parent) {
+	protected EntropyImpl(Entropy parent) {
 		this.entropy = parent.getEntropyAsBytes();
 	}
 

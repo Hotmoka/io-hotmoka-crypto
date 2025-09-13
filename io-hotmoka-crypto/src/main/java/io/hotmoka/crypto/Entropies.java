@@ -72,16 +72,6 @@ public final class Entropies {
 	}
 
 	/**
-	 * Yields a copy of the given entropy.
-	 * 
-	 * @param parent the entropy to clone
-	 * @return the copy
-	 */
-	public static Entropy copy(Entropy parent) {
-		return new EntropyImpl(parent);
-	}
-
-	/**
 	 * Yields new entropy corresponding to the given bytes.
 	 * 
 	 * @param entropy the 16 bytes of entropy
