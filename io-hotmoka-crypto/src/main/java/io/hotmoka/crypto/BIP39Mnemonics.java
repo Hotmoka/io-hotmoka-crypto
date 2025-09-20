@@ -51,4 +51,25 @@ public final class BIP39Mnemonics {
 	public static BIP39Mnemonic of(String[] words) {
     	return new BIP39MnemonicImpl(words, BIP39Dictionaries.ENGLISH_DICTIONARY);
     }
+
+	/**
+     * Yields the BIP39 mnemonic for the given entropy using the given dictionary.
+     * 
+     * @param entropy the entropy
+     * @param dictionary the dictionary
+     * @return the mnemonic
+     */
+    public static BIP39Mnemonic of(byte[] entropy, BIP39Dictionary dictionary) {
+    	return new BIP39MnemonicImpl(entropy, dictionary);
+    }
+
+    /**
+     * Yields the BIP39 mnemonic for the given entropy using the English BIP39 dictionary.
+     * 
+     * @param entropy the entropy
+     * @return the mnemonic
+     */
+    public static BIP39Mnemonic of(byte[] entropy) {
+    	return new BIP39MnemonicImpl(entropy, BIP39Dictionaries.ENGLISH_DICTIONARY);
+    }
 }

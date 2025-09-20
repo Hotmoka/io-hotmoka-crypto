@@ -52,4 +52,11 @@ public interface BIP39Mnemonic {
 	 * @throws IOException if the file cannot be written
 	 */
 	void dump(Path name) throws IOException;
+
+	/**
+	 * Yields the data represented by this mnemonic, as an array of bytes.
+	 * 
+	 * @return the resulting array of bytes
+	 */
+	byte[] getBytes();
 }

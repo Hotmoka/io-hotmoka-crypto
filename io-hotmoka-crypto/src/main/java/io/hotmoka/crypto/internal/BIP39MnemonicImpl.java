@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import io.hotmoka.crypto.Entropies;
 import io.hotmoka.crypto.api.Account;
 import io.hotmoka.crypto.api.BIP39Dictionary;
 import io.hotmoka.crypto.api.BIP39Mnemonic;
@@ -53,7 +54,7 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
     	byte[] merge = new byte[entropy.length + reference.length];
     	System.arraycopy(entropy, 0, merge, 0, entropy.length);
     	System.arraycopy(reference, 0, merge, entropy.length, reference.length);
-        this.words = words(merge, new ArrayList<>());
+        this.words = words(merge);
     }
 
     /**
@@ -62,9 +63,9 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
      * @param entropy the entropy
      * @param dictionary the dictionary
      */
-    BIP39MnemonicImpl(byte[] entropy, BIP39Dictionary dictionary) {
+    public BIP39MnemonicImpl(byte[] entropy, BIP39Dictionary dictionary) {
     	this.dictionary = dictionary;
-        this.words = words(entropy, new ArrayList<>());
+        this.words = words(entropy);
     }
 
     /**
@@ -72,15 +73,71 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
      * 
      * @param words the words, coming from {@code dictionary}
      * @param dictionary the dictionary
+     * @throws IllegalArgumentException if some word is not a valid BIP39 word
      */
     public BIP39MnemonicImpl(String[] words, BIP39Dictionary dictionary) {
     	this.words = words.clone();
     	this.dictionary = dictionary;
+
+    	for (String word: words)
+            if (dictionary.indexOf(word) < 0)
+                throw new IllegalArgumentException(word + " is not a valid mnemonic word");
     }
 
     @Override
     public Stream<String> stream() {
         return Stream.of(words);
+    }
+
+    @Override
+    public byte[] getBytes() {
+        // each mnemonic word represents 11 bits
+        var bits = new boolean[words.length * 11];
+        int bitsOfChecksum = words.length / 3;
+        var checksum = new boolean[bitsOfChecksum];
+        int startOfChecksum = bits.length - bitsOfChecksum;
+
+        // the entropy uses the remaining number of bytes
+        var entropy = new byte[startOfChecksum / 8];
+
+        // we transform the mnemonic phrase into a sequence of bits
+        int pos = 0;
+        for (String word: words) {
+            int index = dictionary.indexOf(word);
+
+            // every word accounts for 11 bits
+            for (int bit = 0; bit <= 10; bit++)
+                bits[pos++] = (index & (0x400 >>> bit)) != 0;
+        }
+
+        // the first startOfChecksum bits are the entropy
+        for (pos = 0; pos < startOfChecksum; pos++)
+            if (bits[pos])
+                entropy[pos / 8] |= 0x80 >>> (pos % 8);
+
+        // the remaining bits are the checksum
+        for ( ; pos < bits.length; pos++)
+            checksum[pos - startOfChecksum] = bits[pos];
+
+        // we recompute the checksum from the entropy
+        MessageDigest digest;
+
+        try {
+        	digest = MessageDigest.getInstance("SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+        	throw new RuntimeException("Unexpected exception", e);
+        }
+
+        byte[] sha256 = digest.digest(entropy);
+        var checksumRecomputed = new boolean[bitsOfChecksum];
+        for (pos = 0; pos < bitsOfChecksum; pos++)
+            checksumRecomputed[pos] = (sha256[pos / 8] & (0x80 >>> (pos % 8))) != 0;
+
+        if (!Arrays.equals(checksum, checksumRecomputed))
+            throw new IllegalArgumentException("Illegal mnemonic phrase: checksum mismatch");
+
+        return entropy;
     }
 
     @Override
@@ -104,8 +161,6 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
         int pos = 0;
         for (String word: words) {
             int index = dictionary.indexOf(word);
-            if (index < 0)
-                throw new IllegalArgumentException(word + " is not a valid mnemonic word");
 
             // every word accounts for 11 bits
             for (int bit = 0; bit <= 10; bit++)
@@ -144,12 +199,12 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
         byte[] sha256 = digest.digest(merge);
         var checksumRecomputed = new boolean[bitsOfChecksum];
         for (pos = 0; pos < bitsOfChecksum; pos++)
-            checksumRecomputed[pos] = (sha256[pos] & (0x80 >>> (pos % 8))) != 0;
+            checksumRecomputed[pos] = (sha256[pos / 8] & (0x80 >>> (pos % 8))) != 0;
 
         if (!Arrays.equals(checksum, checksumRecomputed))
             throw new IllegalArgumentException("Illegal mnemonic phrase: checksum mismatch");
 
-        return accountCreator.apply(io.hotmoka.crypto.Entropies.of(entropy), transaction);
+        return accountCreator.apply(Entropies.of(entropy), transaction);
     }
 
     @Override
@@ -164,10 +219,9 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
      * Transforms a sequence of bytes into BIP39 words, including a checksum at its end.
      * 
      * @param data the bytes
-     * @param words the list where words get added
-     * @return the final value of {@code words}, as an array
+     * @return the BIP39 words
      */
-    private String[] words(byte[] data, List<String> words) {
+    private String[] words(byte[] data) {
         MessageDigest digest;
 
         try {
@@ -189,9 +243,9 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
 
         // the remaining bits are the first (bits.size - dataSizeTimes8) bits of the sha256 checksum
         for (int pos = dataSizeTimes8; pos < bits.length; pos++)
-            bits[pos] = (sha256[pos - dataSizeTimes8] & (0x80 >>> (pos % 8))) != 0;
+            bits[pos] = (sha256[(pos - dataSizeTimes8) / 8] & (0x80 >>> (pos % 8))) != 0;
 
-        selectWordsFor(bits, words);
+        var words = selectWordsFor(bits);
 
         return words.toArray(new String[words.size()]); // old form to make Android happy
     }
@@ -200,10 +254,12 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
      * Transforms a sequence of bits into BIP39 words.
      * 
      * @param bits the bits
-     * @param words the list where words get added
+     * @return the BIP39 words
      */
-    private void selectWordsFor(boolean[] bits, List<String> words) {
-        // we take 11 bits at a time from bits and use them as an index into the dictionary
+    private List<String> selectWordsFor(boolean[] bits) {
+    	var words = new ArrayList<String>();
+
+    	// we take 11 bits at a time from bits and use them as an index into the dictionary
         for (int pos = 0; pos < bits.length - 10; pos += 11) {
             // we select bits from pos (inclusive) to pos + 11 (exclusive)
             int index = 0;
@@ -215,5 +271,7 @@ public class BIP39MnemonicImpl implements BIP39Mnemonic {
             // and we add the index-th word from the dictionary
             words.add(dictionary.getWord(index));
         }
+
+        return words;
     }
 }

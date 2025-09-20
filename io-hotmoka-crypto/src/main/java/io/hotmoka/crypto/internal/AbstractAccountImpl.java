@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import io.hotmoka.crypto.BIP39Dictionaries;
 import io.hotmoka.crypto.api.Account;
 import io.hotmoka.crypto.api.BIP39Dictionary;
 import io.hotmoka.crypto.api.BIP39Mnemonic;
@@ -124,7 +125,7 @@ public abstract class AbstractAccountImpl<R extends Comparable<? super R>> exten
 
 	@Override
     public BIP39Mnemonic bip39Words() {
-    	return new BIP39MnemonicImpl(this, io.hotmoka.crypto.BIP39Dictionaries.ENGLISH_DICTIONARY);
+    	return new BIP39MnemonicImpl(this, BIP39Dictionaries.ENGLISH_DICTIONARY);
     }
 
     @Override
