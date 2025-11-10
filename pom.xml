@@ -26,8 +26,11 @@ Note: submodules whose artifact must be deployed on Maven Central must activate 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
-    <io.hotmoka.crypto.version>1.5.3</io.hotmoka.crypto.version>
+    <io.hotmoka.crypto.version>1.5.4</io.hotmoka.crypto.version>
+    <io.hotmoka.annotations.version>1.4.1</io.hotmoka.annotations.version>
+    <io.hotmoka.websockets.version>1.7.5</io.hotmoka.websockets.version>
     <io.hotmoka.testing.version>1.4.1</io.hotmoka.testing.version>
+    <io.hotmoka.cli.version>1.5.5</io.hotmoka.cli.version>
   </properties>
 
   <groupId>io.hotmoka</groupId>
@@ -84,6 +87,8 @@ Note: submodules whose artifact must be deployed on Maven Central must activate 
   <modules>
     <module>io-hotmoka-crypto-api</module>
     <module>io-hotmoka-crypto</module>
+    <module>io-hotmoka-crypto-cli-api</module>
+    <module>io-hotmoka-crypto-cli</module>
   </modules>
 
   <!-- typical dependencies if submodules use JUnit 5 -->
