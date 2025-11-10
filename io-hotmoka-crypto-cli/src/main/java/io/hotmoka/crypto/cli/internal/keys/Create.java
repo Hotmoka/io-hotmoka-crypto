@@ -1,5 +1,5 @@
 /*
-Copyright 2025 Fausto Spoto
+Copyright 2023 Fausto Spoto
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@ limitations under the License.
 package io.hotmoka.crypto.cli.internal.keys;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -36,24 +38,26 @@ import io.hotmoka.crypto.Hex;
 import io.hotmoka.crypto.HexConversionException;
 import io.hotmoka.crypto.SignatureAlgorithms;
 import io.hotmoka.crypto.api.SignatureAlgorithm;
-import io.hotmoka.crypto.cli.api.keys.KeysShowOutput;
+import io.hotmoka.crypto.cli.api.keys.KeysCreateOutput;
 import io.hotmoka.crypto.cli.converters.SignatureOptionConverter;
-import io.hotmoka.crypto.cli.internal.json.KeysShowOutputJson;
-import io.hotmoka.crypto.cli.keys.KeysShowOutputs;
+import io.hotmoka.crypto.cli.internal.json.KeysCreateOutputJson;
+import io.hotmoka.crypto.cli.keys.KeysCreateOutputs;
 import io.hotmoka.exceptions.ExceptionSupplierFromMessage;
 import io.hotmoka.exceptions.Objects;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
-@Command(name = "show", header = "Show information about a key pair.", showDefaultValues = true)
-public class Show extends AbstractCommandWithJsonOutput {
+@Command(name = "create", header = "Create a new key pair.", showDefaultValues = true)
+public class Create extends AbstractCommandWithJsonOutput {
 
-	@Parameters(index = "0", description = "the path of the file holding the key pair")
-    private Path keys;
+	@Option(names = "--output-dir", paramLabel = "<path>", description = "the path of the directory where the key pair file of the new key pair will be written", defaultValue = "")
+    private Path outputDir;
 
-	@Option(names = "--password", description = "the password of the key pair", interactive = true, defaultValue = "")
+	@Option(names = "--name", description = "the name of the file where the new key pair must be written; if missing, the first characters of the Base58-encoded public key will be used, followed by \".pem\"")
+    private String name;
+
+	@Option(names = "--password", description = "the password that will be needed later to use the key pair", interactive = true, defaultValue = "")
     private char[] password;
 
 	@Option(names = "--signature", description = "the signature algorithm for the key pair (ed25519, sha256dsa, qtesla1, qtesla3)",
@@ -65,13 +69,38 @@ public class Show extends AbstractCommandWithJsonOutput {
 
 	@Override
 	protected void execute() throws CommandException {
-		String passwordAsString = new String(password);
+		String passwordAsString;
 
 		try {
-			KeyPair keys = Entropies.load(this.keys).keys(passwordAsString, signature);
+			var entropy = Entropies.random();
+			passwordAsString = new String(password);
+			KeyPair keys = entropy.keys(passwordAsString, signature);
+
+			String name = this.name;
+			if (name == null) {
+				try {
+					name = Base58.toBase58String(signature.encodingOf(keys.getPublic()));
+					if (name.length() > 100)
+						name = name.substring(0, 100);
+				}
+				catch (InvalidKeyException e) {
+					// this should not happen since we created the keys with the signature algorithm
+					throw new RuntimeException(e);
+				}
+
+				name = name + ".pem";
+			}
+
+			Path file = outputDir.resolve(name);
+			try {
+				entropy.dump(file);
+			}
+			catch (IOException e) {
+				throw new CommandException("Cannot write the key pair into \"" + file + "\"", e);
+			}
 
 			try {
-				report(new Output(signature, keys, showPrivate), KeysShowOutputs.Encoder::new);
+				report(new Output(file, signature, keys, showPrivate), KeysCreateOutputs.Encoder::new);
 			}
 			catch (NoSuchAlgorithmException e) {
 				throw new CommandException("The sha256 hashing algorithm is not available in this machine!");
@@ -80,9 +109,6 @@ public class Show extends AbstractCommandWithJsonOutput {
 				// this should be impossible, since we have created the keys with the same signature algorithm
 				throw new RuntimeException(e);
 			}
-		}
-		catch (IOException e) {
-			throw new CommandException("Cannot access file \"" + keys + "\"", e);
 		}
 		finally {
 			passwordAsString = null;
@@ -94,7 +120,8 @@ public class Show extends AbstractCommandWithJsonOutput {
 	 * The output of this command.
 	 */
 	@Immutable
-	public static class Output implements KeysShowOutput {
+	public static class Output implements KeysCreateOutput {
+		private final Path file;
 		private final SignatureAlgorithm signature;
 		private final String publicKeyBase58;
 		private final String publicKeyBase64;
@@ -110,21 +137,29 @@ public class Show extends AbstractCommandWithJsonOutput {
 		 * @throws InconsistentJsonException if {@code json} is inconsistent
 		 * @throws NoSuchAlgorithmException if {@code json} refers to a non-available cryptographic algorithm
 		 */
-		public Output(KeysShowOutputJson json) throws InconsistentJsonException, NoSuchAlgorithmException {
+		public Output(KeysCreateOutputJson json) throws InconsistentJsonException, NoSuchAlgorithmException {
 			ExceptionSupplierFromMessage<InconsistentJsonException> exp = InconsistentJsonException::new;
+
+			try {
+				this.file = Paths.get(Objects.requireNonNull(json.getFile(), "file cannot be null", InconsistentJsonException::new));
+			}
+			catch (InvalidPathException e) {
+				throw new InconsistentJsonException(e);
+			}
+
 			this.signature = SignatureAlgorithms.of(Objects.requireNonNull(json.getSignature(), "signature cannot be null", exp));
 			this.publicKeyBase58 = Base58.requireBase58(Objects.requireNonNull(json.getPublicKeyBase58(), "publicKeyBase58 cannot be null", exp), exp);
 			this.publicKeyBase64 = Base64.requireBase64(Objects.requireNonNull(json.getPublicKeyBase64(), "publicKeyBase64 cannot be null", exp), exp);
-			this.tendermintAddress = Hex.requireHex(Objects.requireNonNull(json.getTendermintAddress(), "tendermintAddress cannot be null", exp), exp);
+			this.tendermintAddress = Objects.requireNonNull(json.getTendermintAddress(), "tendermintAddress cannot be null", exp);
 			if ((this.privateKeyBase58 = json.getPrivateKeyBase58().orElse(null)) != null)
 				Base58.requireBase58(privateKeyBase58, exp);
 			if ((this.privateKeyBase64 = json.getPrivateKeyBase64().orElse(null)) != null)
 				Base64.requireBase64(privateKeyBase64, exp);
-			if ((this.concatenatedBase64 = json.getConcatenatedBase64().orElse(null)) != null)
-				Base64.requireBase64(concatenatedBase64, exp);
+			this.concatenatedBase64 = json.getConcatenatedBase64().orElse(null);
 		}
 
-		private Output(SignatureAlgorithm signature, KeyPair keys, boolean alsoPrivate) throws NoSuchAlgorithmException, InvalidKeyException {
+		private Output(Path file, SignatureAlgorithm signature, KeyPair keys, boolean alsoPrivate) throws NoSuchAlgorithmException, InvalidKeyException {
+			this.file = file;
 			this.signature = signature;
 			byte[] publicKeyBytes = signature.encodingOf(keys.getPublic());
 			this.publicKeyBase58 = Base58.toBase58String(publicKeyBytes);
@@ -136,7 +171,7 @@ public class Show extends AbstractCommandWithJsonOutput {
 			}
 			catch (HexConversionException e) {
 				// this should not happen since the output of the sha256 algorithm can be converted into a hex string
-				throw new RuntimeException("The output of the sha256 algorithm is invalid!", e);
+				throw new RuntimeException("The otuput of the sha256 algorithm is invalid!", e);
 			}
 
 			if (alsoPrivate) {
@@ -153,6 +188,11 @@ public class Show extends AbstractCommandWithJsonOutput {
 				this.privateKeyBase64 = null;
 				this.concatenatedBase64 = null;
 			}
+		}
+
+		@Override
+		public Path getFile() {
+			return file;
 		}
 
 		@Override
@@ -193,6 +233,8 @@ public class Show extends AbstractCommandWithJsonOutput {
 		@Override
 		public String toString() {
 			var sb = new StringBuilder();
+
+			sb.append("The new key pair has been written into " + asPath(file) + ":\n");
 
 			if (publicKeyBase58.length() > MAX_PRINTED_KEY)
 				sb.append("* public key: " + publicKeyBase58.substring(0, MAX_PRINTED_KEY) + "..." + " (" + signature + ", base58)\n");

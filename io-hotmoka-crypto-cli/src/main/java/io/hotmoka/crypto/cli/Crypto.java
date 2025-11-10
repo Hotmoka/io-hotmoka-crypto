@@ -16,7 +16,9 @@ limitations under the License.
 
 package io.hotmoka.crypto.cli;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import io.hotmoka.cli.AbstractCLI;
 import io.hotmoka.cli.AbstractPropertyFileVersionProvider;
@@ -47,6 +49,74 @@ public class Crypto extends AbstractCLI {
 	 */
 	public static void main(String[] args) {
 		main(Crypto::new, args);
+	}
+
+	/**
+	 * Runs the {@code crypto keys create} command with the given arguments.
+	 * 
+	 * @param args the arguments
+	 * @return what the moka tool has written into the standard output
+	 * @throws IOException if the construction of the return value failed
+	 */
+	public static String keysCreate(String args) throws IOException {
+		return run("keys create " + args);
+	}
+
+	/**
+	 * Runs the {@code crypto keys show} command with the given arguments.
+	 * 
+	 * @param args the arguments
+	 * @return what the moka tool has written into the standard output
+	 * @throws IOException if the construction of the return value failed
+	 */
+	public static String keysShow(String args) throws IOException {
+		return run("keys show " + args);
+	}
+
+	/**
+	 * Runs the {@code crypto keys export} command with the given arguments.
+	 * 
+	 * @param args the arguments
+	 * @return what the moka tool has written into the standard output
+	 * @throws IOException if the construction of the return value failed
+	 */
+	public static String keysExport(String args) throws IOException {
+		return run("keys export " + args);
+	}
+
+	/**
+	 * Runs the {@code crypto keys import} command with the given arguments.
+	 * 
+	 * @param args the arguments
+	 * @return what the moka tool has written into the standard output
+	 * @throws IOException if the construction of the return value failed
+	 */
+	public static String keysImport(String args) throws IOException {
+		return run("keys import " + args);
+	}
+
+	/**
+	 * Runs the given command-line with the crypto tool, inside a sand-box where the
+	 * standard output is redirected into the resulting string. It performs as calling "crypto command".
+	 * 
+	 * @param command the command to run with crypto
+	 * @return what the moka tool has written into the standard output
+	 * @throws IOException if the construction of the return value failed
+	 */
+	private static String run(String command) throws IOException {
+		var originalOut = System.out;
+		var originalErr = System.err;
+	
+		try (var baos = new ByteArrayOutputStream(); var out = new PrintStream(baos)) {
+			System.setOut(out);
+			System.setErr(out);
+			main(Crypto::new, command.split(" "));
+			return new String(baos.toByteArray());
+		}
+		finally {
+			System.setOut(originalOut);
+			System.setErr(originalErr);
+		}
 	}
 
 	static {

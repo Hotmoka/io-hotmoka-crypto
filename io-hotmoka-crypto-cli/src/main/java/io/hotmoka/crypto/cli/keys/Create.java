@@ -14,23 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package io.hotmoka.crypto.cli.internal;
+package io.hotmoka.crypto.cli.keys;
 
-import io.hotmoka.crypto.cli.keys.Create;
-import io.hotmoka.crypto.cli.keys.Export;
-import io.hotmoka.crypto.cli.keys.Import;
-import io.hotmoka.crypto.cli.keys.Show;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.HelpCommand;
 
-@Command(name = "keys",
-	description = "Manage cryptographical keys.",
-	subcommands = {
-		HelpCommand.class,
-		Create.class,
-		Import.class,
-		Export.class,
-		Show.class
-	})
-public class Keys {
+/**
+ * A command that shows the content of a key pair file.
+ */
+@Command(name = "create", header = "Create a new key pair.", showDefaultValues = true)
+public class Create extends io.hotmoka.crypto.cli.internal.keys.Create {
+
+	/**
+	 * Builds the command.
+	 */
+	public Create() {}
 }

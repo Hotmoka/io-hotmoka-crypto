@@ -32,6 +32,7 @@ module io.hotmoka.crypto.cli {
     requires transitive io.hotmoka.crypto.cli.api;
 	requires io.hotmoka.crypto;
 	requires io.hotmoka.cli;
+	requires io.hotmoka.annotations;
 	requires io.hotmoka.exceptions;
 	requires io.hotmoka.websockets.beans;
 	requires com.google.gson;
