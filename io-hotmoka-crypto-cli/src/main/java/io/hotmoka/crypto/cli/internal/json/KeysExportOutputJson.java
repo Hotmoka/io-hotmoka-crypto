@@ -19,12 +19,12 @@ package io.hotmoka.crypto.cli.internal.json;
 import java.util.stream.Stream;
 
 import io.hotmoka.crypto.cli.api.keys.KeysExportOutput;
-import io.hotmoka.crypto.cli.internal.keys.Export;
+import io.hotmoka.crypto.cli.internal.keys.ExportImpl;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
 import io.hotmoka.websockets.beans.api.JsonRepresentation;
 
 /**
- * The JSON representation of the output of the {@code moka keys export} command.
+ * The JSON representation of the output of the {@code crypto keys export} command.
  */
 public abstract class KeysExportOutputJson implements JsonRepresentation<KeysExportOutput> {
 	private final String[] bip39Words;
@@ -39,6 +39,6 @@ public abstract class KeysExportOutputJson implements JsonRepresentation<KeysExp
 
 	@Override
 	public KeysExportOutput unmap() throws InconsistentJsonException {
-		return new Export.Output(this);
+		return new ExportImpl.Output(this);
 	}
 }

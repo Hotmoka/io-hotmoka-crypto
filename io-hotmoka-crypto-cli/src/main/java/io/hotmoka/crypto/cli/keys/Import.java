@@ -24,7 +24,7 @@ import picocli.CommandLine.Command;
 @Command(name = "import",
 	header = "Import a key pair file from BIP39 words.",
 	showDefaultValues = true)
-public class Import extends io.hotmoka.crypto.cli.internal.keys.Import {
+public class Import extends io.hotmoka.crypto.cli.internal.keys.ImportImpl {
 
 	/**
 	 * Builds the command.

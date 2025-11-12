@@ -23,7 +23,7 @@ import io.hotmoka.annotations.Immutable;
 import io.hotmoka.crypto.api.SignatureAlgorithm;
 
 /**
- * The output of the {@code mokamint-node keys create} command.
+ * The output of the {@code crypto keys create} command.
  */
 @Immutable
 public interface KeysCreateOutput {

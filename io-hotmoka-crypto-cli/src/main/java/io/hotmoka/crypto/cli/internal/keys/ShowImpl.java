@@ -43,12 +43,10 @@ import io.hotmoka.crypto.cli.keys.KeysShowOutputs;
 import io.hotmoka.exceptions.ExceptionSupplierFromMessage;
 import io.hotmoka.exceptions.Objects;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
-import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "show", header = "Show information about a key pair.", showDefaultValues = true)
-public class Show extends AbstractCommandWithJsonOutput {
+public class ShowImpl extends AbstractCommandWithJsonOutput {
 
 	@Parameters(index = "0", description = "the path of the file holding the key pair")
     private Path keys;

@@ -45,11 +45,9 @@ import io.hotmoka.crypto.cli.keys.KeysCreateOutputs;
 import io.hotmoka.exceptions.ExceptionSupplierFromMessage;
 import io.hotmoka.exceptions.Objects;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
-import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "create", header = "Create a new key pair.", showDefaultValues = true)
-public class Create extends AbstractCommandWithJsonOutput {
+public class CreateImpl extends AbstractCommandWithJsonOutput {
 
 	@Option(names = "--output-dir", paramLabel = "<path>", description = "the path of the directory where the key pair file of the new key pair will be written", defaultValue = "")
     private Path outputDir;

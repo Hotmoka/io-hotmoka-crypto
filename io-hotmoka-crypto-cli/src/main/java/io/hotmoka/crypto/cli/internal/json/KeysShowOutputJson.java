@@ -20,12 +20,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import io.hotmoka.crypto.cli.api.keys.KeysShowOutput;
-import io.hotmoka.crypto.cli.internal.keys.Show;
+import io.hotmoka.crypto.cli.internal.keys.ShowImpl;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
 import io.hotmoka.websockets.beans.api.JsonRepresentation;
 
 /**
- * The JSON representation of the output of the {@code mokamint-node keys show} command.
+ * The JSON representation of the output of the {@code crypto keys show} command.
  */
 public abstract class KeysShowOutputJson implements JsonRepresentation<KeysShowOutput> {
 	private final String signature;
@@ -76,6 +76,6 @@ public abstract class KeysShowOutputJson implements JsonRepresentation<KeysShowO
 
 	@Override
 	public KeysShowOutput unmap() throws InconsistentJsonException, NoSuchAlgorithmException {
-		return new Show.Output(this);
+		return new ShowImpl.Output(this);
 	}
 }

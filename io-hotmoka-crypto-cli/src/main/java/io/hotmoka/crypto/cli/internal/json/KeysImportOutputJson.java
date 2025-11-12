@@ -17,12 +17,12 @@ limitations under the License.
 package io.hotmoka.crypto.cli.internal.json;
 
 import io.hotmoka.crypto.cli.api.keys.KeysImportOutput;
-import io.hotmoka.crypto.cli.internal.keys.Import;
+import io.hotmoka.crypto.cli.internal.keys.ImportImpl;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
 import io.hotmoka.websockets.beans.api.JsonRepresentation;
 
 /**
- * The JSON representation of the output of the {@code moka keys import} command.
+ * The JSON representation of the output of the {@code crypto keys import} command.
  */
 public abstract class KeysImportOutputJson implements JsonRepresentation<KeysImportOutput> {
 	private final String file;
@@ -37,6 +37,6 @@ public abstract class KeysImportOutputJson implements JsonRepresentation<KeysImp
 
 	@Override
 	public KeysImportOutput unmap() throws InconsistentJsonException {
-		return new Import.Output(this);
+		return new ImportImpl.Output(this);
 	}
 }

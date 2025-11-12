@@ -39,14 +39,10 @@ import io.hotmoka.crypto.cli.internal.json.KeysImportOutputJson;
 import io.hotmoka.crypto.cli.keys.KeysImportOutputs;
 import io.hotmoka.exceptions.Objects;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
-import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "import",
-	header = "Import a key pair file from BIP39 words.",
-	showDefaultValues = true)
-public class Import extends AbstractCommandWithJsonOutput {
+public class ImportImpl extends AbstractCommandWithJsonOutput {
 
 	@Parameters(description = "the 12 BIP39 words of the key pair to import")
     private List<String> words = new ArrayList<>();

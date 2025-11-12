@@ -21,7 +21,7 @@ import java.nio.file.Path;
 import io.hotmoka.annotations.Immutable;
 
 /**
- * The output of the {@code mokamint-node keys import} command.
+ * The output of the {@code crypto keys import} command.
  */
 @Immutable
 public interface KeysImportOutput {

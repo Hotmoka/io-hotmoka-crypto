@@ -19,10 +19,10 @@ package io.hotmoka.crypto.cli.keys;
 import picocli.CommandLine.Command;
 
 /**
- * A command that shows the content of a key pair file.
+ * A command that creates a key pair.
  */
 @Command(name = "create", header = "Create a new key pair.", showDefaultValues = true)
-public class Create extends io.hotmoka.crypto.cli.internal.keys.Create {
+public class Create extends io.hotmoka.crypto.cli.internal.keys.CreateImpl {
 
 	/**
 	 * Builds the command.

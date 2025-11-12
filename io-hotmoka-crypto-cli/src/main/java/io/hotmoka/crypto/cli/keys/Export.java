@@ -22,7 +22,7 @@ import picocli.CommandLine.Command;
  * A command that exports a key pair as BIP39 words.
  */
 @Command(name = "export", header = "Export a key pair file as BIP39 words.", showDefaultValues = true)
-public class Export extends io.hotmoka.crypto.cli.internal.keys.Export {
+public class Export extends io.hotmoka.crypto.cli.internal.keys.ExportImpl {
 
 	/**
 	 * Builds the command.

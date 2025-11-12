@@ -30,11 +30,9 @@ import io.hotmoka.crypto.cli.api.keys.KeysExportOutput;
 import io.hotmoka.crypto.cli.internal.json.KeysExportOutputJson;
 import io.hotmoka.crypto.cli.keys.KeysExportOutputs;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
-import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "export", header = "Export a key pair file as BIP39 words.", showDefaultValues = true)
-public class Export extends AbstractCommandWithJsonOutput {
+public class ExportImpl extends AbstractCommandWithJsonOutput {
 
 	@Parameters(index = "0", description = "the path of the file holding the key pair")
     private Path keys;

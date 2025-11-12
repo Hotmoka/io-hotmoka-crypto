@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import io.hotmoka.annotations.Immutable;
 
 /**
- * The output of the {@code mokamint-node keys export} command.
+ * The output of the {@code crypto keys export} command.
  */
 @Immutable
 public interface KeysExportOutput {

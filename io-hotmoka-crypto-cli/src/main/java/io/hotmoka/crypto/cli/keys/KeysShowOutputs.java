@@ -23,7 +23,7 @@ import io.hotmoka.crypto.cli.internal.json.KeysShowOutputJson;
 import jakarta.websocket.DecodeException;
 
 /**
- * Providers of outputs for the {@code mokamint-node keys show} command.
+ * Providers of outputs for the {@code crypto keys show} command.
  */
 public abstract class KeysShowOutputs {
 

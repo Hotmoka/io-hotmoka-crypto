@@ -22,7 +22,7 @@ import picocli.CommandLine.Command;
  * A command that shows the content of a key pair file.
  */
 @Command(name = "show", header = "Show information about a key pair.", showDefaultValues = true)
-public class Show extends io.hotmoka.crypto.cli.internal.keys.Show {
+public class Show extends io.hotmoka.crypto.cli.internal.keys.ShowImpl {
 
 	/**
 	 * Builds the command.

@@ -20,12 +20,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import io.hotmoka.crypto.cli.api.keys.KeysCreateOutput;
-import io.hotmoka.crypto.cli.internal.keys.Create;
+import io.hotmoka.crypto.cli.internal.keys.CreateImpl;
 import io.hotmoka.websockets.beans.api.InconsistentJsonException;
 import io.hotmoka.websockets.beans.api.JsonRepresentation;
 
 /**
- * The JSON representation of the output of the {@code moka keys create} command.
+ * The JSON representation of the output of the {@code crypto keys create} command.
  */
 public abstract class KeysCreateOutputJson implements JsonRepresentation<KeysCreateOutput> {
 	private final String file;
@@ -82,6 +82,6 @@ public abstract class KeysCreateOutputJson implements JsonRepresentation<KeysCre
 
 	@Override
 	public KeysCreateOutput unmap() throws InconsistentJsonException, NoSuchAlgorithmException {
-		return new Create.Output(this);
+		return new CreateImpl.Output(this);
 	}
 }
