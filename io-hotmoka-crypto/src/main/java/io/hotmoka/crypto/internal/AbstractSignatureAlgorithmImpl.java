@@ -25,12 +25,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -128,7 +126,7 @@ public abstract class AbstractSignatureAlgorithmImpl implements SignatureAlgorit
 	 * @param random the generator of entropy to use for the key pair generator
 	 * @return the key pair generator
 	 */
-	protected abstract KeyPairGenerator mkKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException;
+	protected abstract KeyPairGenerator mkKeyPairGenerator(SecureRandom random);
 
 	@Override
 	public KeyPair getKeyPair(byte[] entropy, BIP39Dictionary dictionary, String password) {
@@ -156,12 +154,7 @@ public abstract class AbstractSignatureAlgorithmImpl implements SignatureAlgorit
 		    }
 		};
 
-		try {
-			return mkKeyPairGenerator(random).generateKeyPair();
-		}
-		catch (NoSuchProviderException | InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
-    		throw new RuntimeException("unexpected exception", e);
-    	}
+		return mkKeyPairGenerator(random).generateKeyPair();
     }
 
 	@Override

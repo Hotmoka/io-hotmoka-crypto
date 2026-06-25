@@ -80,16 +80,32 @@ public class ED25519 extends AbstractSignatureAlgorithmImpl {
     		this.keyFactory = KeyFactory.getInstance("Ed25519", "BC");
     		this.keyPairGenerator = mkKeyPairGenerator(CryptoServicesRegistrar.getSecureRandom());
     	}
-    	catch (NoSuchProviderException | InvalidAlgorithmParameterException e) {
+    	catch (NoSuchProviderException e) {
     		throw new NoSuchAlgorithmException(e);
     	}
     }
 
-	@Override
-	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    private KeyPairGenerator newKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException {
 		var keyPairGenerator = KeyPairGenerator.getInstance("Ed25519", "BC");
-		keyPairGenerator.initialize(new EdDSAParameterSpec(EdDSAParameterSpec.Ed25519), random);
-		return keyPairGenerator;
+
+		try {
+			keyPairGenerator.initialize(new EdDSAParameterSpec(EdDSAParameterSpec.Ed25519), random);
+			return keyPairGenerator;
+		}
+		catch (InvalidAlgorithmParameterException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+    @Override
+	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) {
+    	try {
+			return newKeyPairGenerator(random);
+		}
+    	catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+    		// impossible, since this object has been already constructed successfully
+    		throw new RuntimeException("unexpected exception", e);
+		}
 	}
 
 	@Override

@@ -70,19 +70,31 @@ public class QTESLA3 extends AbstractSignatureAlgorithmImpl {
     		this.signer = new QTESLASigner();
     		this.keyFactory = KeyFactory.getInstance("qTESLA", "BCPQC");
     	}
-    	catch (NoSuchAlgorithmException e) {
-    		throw e;
-    	}
-    	catch (NoSuchProviderException | InvalidAlgorithmParameterException e) {
+    	catch (NoSuchProviderException e) {
     		throw new NoSuchAlgorithmException(e);
     	}
     }
 
+    private KeyPairGenerator newKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException {
+    	try {
+    		var keyPairGenerator = KeyPairGenerator.getInstance("qTESLA", "BCPQC");
+    		keyPairGenerator.initialize(new QTESLAParameterSpec(QTESLAParameterSpec.PROVABLY_SECURE_III), random);
+    		return keyPairGenerator;
+    	}
+		catch (InvalidAlgorithmParameterException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
     @Override
-	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
-		var keyPairGenerator = KeyPairGenerator.getInstance("qTESLA", "BCPQC");
-		keyPairGenerator.initialize(new QTESLAParameterSpec(QTESLAParameterSpec.PROVABLY_SECURE_III), random);
-		return keyPairGenerator;
+	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) {
+    	try {
+			return newKeyPairGenerator(random);
+		}
+    	catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+    		// impossible, since this object has been already constructed successfully
+    		throw new RuntimeException("unexpected exception", e);
+		}
 	}
 
 	@Override

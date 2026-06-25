@@ -40,42 +40,42 @@ public interface KeysShowOutput {
 	SignatureAlgorithm getSignature();
 
 	/**
-	 * The base58-encoded public key.
+	 * Yields the base58-encoded public key.
 	 * 
 	 * @return the base58-encoded public key
 	 */
 	String getPublicKeyBase58();
 
 	/**
-	 * The base64-encoded public key.
+	 * Yields the base64-encoded public key.
 	 * 
 	 * @return the base64-encoded public key
-	 */	
+	 */
 	String getPublicKeyBase64();
 
 	/**
-	 * The public key represented as a Tendermint address.
+	 * Yields the public key represented as a Tendermint address.
 	 * 
 	 * @return the public key represented as a Tendermint address
 	 */
 	String getTendermintAddress();
 
 	/**
-	 * The base58-encoded private key.
+	 * Yields the base58-encoded private key.
 	 * 
 	 * @return the base58-encoded private key, if this output reports it
 	 */
 	Optional<String> getPrivateKeyBase58();
 
 	/**
-	 * The base64-encoded private key.
+	 * Yields the base64-encoded private key.
 	 * 
 	 * @return the base64-encoded private key, if this output reports it
 	 */
 	Optional<String> getPrivateKeyBase64();
 
 	/**
-	 * The base64-encoded concatenated private and public key.
+	 * Yields the base64-encoded concatenated private and public key.
 	 * 
 	 * @return the base64-encoded concatenated private and public key, if this output reports it
 	 */

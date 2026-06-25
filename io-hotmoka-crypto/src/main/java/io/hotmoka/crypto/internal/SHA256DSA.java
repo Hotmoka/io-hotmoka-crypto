@@ -76,11 +76,21 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
     	}
 	}
 
-	@Override
-	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException {
+	private KeyPairGenerator newKeyPairGenerator(SecureRandom random) throws NoSuchAlgorithmException, NoSuchProviderException {
 		var keyPairGenerator = KeyPairGenerator.getInstance("DSA", "BC");
 		keyPairGenerator.initialize(2048, random);
 		return keyPairGenerator;
+	}
+
+    @Override
+	protected KeyPairGenerator mkKeyPairGenerator(SecureRandom random) {
+    	try {
+			return newKeyPairGenerator(random);
+		}
+    	catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+    		// impossible, since this object has been already constructed successfully
+    		throw new RuntimeException("unexpected exception", e);
+		}
 	}
 
 	@Override
@@ -109,12 +119,7 @@ public class SHA256DSA extends AbstractSignatureAlgorithmImpl {
 			}
 		};
 
-		try {
-			return mkKeyPairGenerator(random).generateKeyPair();
-		}
-		catch (NoSuchProviderException | NoSuchAlgorithmException e) {
-			throw new RuntimeException("Unexpected exception", e);
-		}
+		return mkKeyPairGenerator(random).generateKeyPair();
 	}
 
 	@Override

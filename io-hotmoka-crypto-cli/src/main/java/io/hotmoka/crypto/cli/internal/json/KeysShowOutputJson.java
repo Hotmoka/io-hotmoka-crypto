@@ -46,30 +46,65 @@ public abstract class KeysShowOutputJson implements JsonRepresentation<KeysShowO
 		this.concatenatedBase64 = output.getConcatenatedBase64().orElse(null);
 	}
 
+	/**
+	 * Yields the name of the signature algorithm of the key pair.
+	 * 
+	 * @return the name of the signature algorithm of the key pair
+	 */
 	public String getSignature() {
 		return signature;
 	}
 
+	/**
+	 * Yields the base58-encoded public key.
+	 * 
+	 * @return the base58-encoded public key
+	 */
 	public String getPublicKeyBase58() {
 		return publicKeyBase58;
 	}
 
+	/**
+	 * Yields the base64-encoded public key.
+	 * 
+	 * @return the base64-encoded public key
+	 */
 	public String getPublicKeyBase64() {
 		return publicKeyBase64;
 	}
 
+	/**
+	 * Yields the public key represented as a Tendermint address.
+	 * 
+	 * @return the public key represented as a Tendermint address
+	 */
 	public String getTendermintAddress() {
 		return tendermintAddress;
 	}
 
+	/**
+	 * Yields the base58-encoded private key.
+	 * 
+	 * @return the base58-encoded private key, if this output reports it
+	 */
 	public Optional<String> getPrivateKeyBase58() {
 		return Optional.ofNullable(privateKeyBase58);
 	}
 
+	/**
+	 * Yields the base64-encoded private key.
+	 * 
+	 * @return the base64-encoded private key, if this output reports it
+	 */
 	public Optional<String> getPrivateKeyBase64() {
 		return Optional.ofNullable(privateKeyBase64);
 	}
 
+	/**
+	 * Yields the base64-encoded concatenated private and public key.
+	 * 
+	 * @return the base64-encoded concatenated private and public key, if this output reports it
+	 */
 	public Optional<String> getConcatenatedBase64() {
 		return Optional.ofNullable(concatenatedBase64);
 	}

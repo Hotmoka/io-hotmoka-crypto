@@ -31,6 +31,11 @@ public abstract class KeysImportOutputJson implements JsonRepresentation<KeysImp
 		this.file = output.getFile().toString();
 	}
 
+	/**
+	 * Yields the path where the file of the imported keys has been saved.
+	 * 
+	 * @return the path where the file of the imported keys has been saved
+	 */
 	public String getFile() {
 		return file;
 	}
